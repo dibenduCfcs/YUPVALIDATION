@@ -17,7 +17,7 @@ const DropDownModel = ({route, navigation}: any) => {
       <TouchableOpacity
         style={style.renderItem}
         onPress={() => {
-          callBack(item.label);
+          callBack({label: item.label, calledComponent: name});
           navigation.pop();
         }}
         activeOpacity={0.8}>
@@ -35,7 +35,10 @@ const DropDownModel = ({route, navigation}: any) => {
     <View style={style.mainContainer}>
       <TouchableOpacity
         style={{...style.blankContainer, height: blankHeaderHeight}}
-        onPress={() => navigation.pop()}></TouchableOpacity>
+        onPress={() => {
+          callBack({label: '', calledComponent: name});
+          navigation.pop();
+        }}></TouchableOpacity>
       <View style={style.dataContainer}>
         <Text style={style.title}>{title}</Text>
         <FlatList

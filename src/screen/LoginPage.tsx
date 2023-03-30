@@ -1,7 +1,6 @@
-import {createRef, useCallback, useState} from 'react';
+import {createRef, useCallback, useEffect, useState} from 'react';
 import {
   Keyboard,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -10,72 +9,118 @@ import {
   View,
 } from 'react-native';
 import * as yup from 'yup';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import CustomBox from '../components/CustomBox';
 import DropDownBox from '../components/DropDownBox';
 import {colors, strings, dimensions, fonts} from '../utils';
 const {vw, vh} = dimensions;
 const genderData = [
   {
-    label: 'Male'
-  }, 
+    label: 'Male',
+  },
   {
-    label: 'Female'
-  }
+    label: 'Female',
+  },
+];
+const relationData = [
+  {
+    label: 'Mother',
+  },
+  {
+    label: 'Father',
+  },
+  {
+    label: 'Brother',
+  },
+  {
+    label: 'Sister',
+  },
 ];
 LogBox.ignoreAllLogs();
 const LoginPage = ({navigation}: any) => {
   const [userEmail, setEmail] = useState('');
   const [userName, setName] = useState('');
   const [gender, setGender] = useState('');
+  const [relation, setRelation] = useState('');
+  const [date, setDate] = useState('');
+  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+  const showDatePicker = () => {
+    setDatePickerVisible(true);
+  };
+  const hideDatePicker = () => {
+    setDatePickerVisible(false);
+  };
+  const handleConfirm = (date: Date) => {
+    const new_date = date.toLocaleDateString();
+    setDate(new_date);
+    hideDatePicker();
+  };
+  const errorHandleFunc = () => {
+    setError({
+      userName: '',
+      userEmail: '',
+      gender: '',
+      relation: '',
+      date: '',
+    });
+  };
   const [error, setError] = useState({
     userName: '',
     userEmail: '',
     gender: '',
+    relation: '',
+    date: '',
   });
   const refBox1: any = createRef();
   const refBox2: any = createRef();
   const KEY_BACKSPACE = 'Backspace';
-
   const validation = () => {
     try {
       let schema = yup.object().shape({
-        gender: yup.string().nonNullable().required('Gender cannot be Empty.'),
-        userName: yup.string().nullable().required('Please Enter UserName'),
+        date: yup.string().nullable().required(),
+        relation: yup.string().nullable().required(),
+        gender: yup.string().nullable().required(),
+        userName: yup.string().nullable().required(),
         userEmail: yup
           .string()
           .nullable()
           .matches(
             /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
           )
-          .required('Please Enter Email'),
+          .required(),
       });
-      schema.validateSync({userEmail: userEmail, userName: userName});
-      setError({
-        userName: '',
-        userEmail: '',
-        gender: '',
+      schema.validateSync({
+        userEmail: userEmail,
+        userName: userName,
+        gender: gender,
+        relation: relation,
+        date: date,
       });
-    } catch (error: any) {
-      console.log('Error ==>', error);
-      setError({
-        userName: '',
-        userEmail: '',
-        gender: '',
-        [error.path]: error.name,
-      });
+      errorHandleFunc();
+    } catch (err: any) {
+      errorHandleFunc();
+      setError({...error, [err.path]: err.name});
     }
   };
-  const callBack = useCallback((gender: string) => {
-    setGender(gender);
+  const callBack = useCallback((state: any) => {
+    switch (state.calledComponent) {
+      case strings.gender_lbl:
+        state.label != '' && setGender(state.label);
+        break;
+      case strings.relation_lbl:
+        state.label != '' && setRelation(state.label);
+        break;
+    }
   }, []);
-  console.log(error);
+  console.log('error', error);
   return (
     <ScrollView>
       <View style={style.mainContainer}>
         <Text style={style.titleLabel}>{strings.login_title}</Text>
         <CustomBox
+          label={strings.email_lbl}
           value={userEmail}
-          placeHolder={'Email'}
+          placeHolder={strings.email_lbl}
           onChangeText={(e: string) => {
             setEmail(e);
             setError({...error, userEmail: userEmail});
@@ -97,13 +142,14 @@ const LoginPage = ({navigation}: any) => {
         />
 
         <CustomBox
+          label={strings.name_lbl}
           value={userName}
           catchError={{
             error: error.userName,
             message: strings.name_error_message,
           }}
           ref={refBox2}
-          placeHolder={'Name'}
+          placeHolder={strings.name_lbl}
           onChangeText={(e: string) => {
             setName(e), setError({...error, userName: userName});
           }}
@@ -117,26 +163,65 @@ const LoginPage = ({navigation}: any) => {
           onSubmitEditing={() => Keyboard.dismiss()}
         />
         <DropDownBox
-          label={gender}
+          label={strings.gender_lbl}
+          value={gender}
           catchError={{
             error: error.gender,
             message: strings.gender_error_message,
           }}
-          onPress={() =>
+          onPress={() => {
+            setError({...error, ['gender']: ''});
             navigation.navigate('DropDown', {
               data: genderData,
               title: strings.gender_title,
-              name: 'Gender',
+              name: strings.gender_lbl,
               previousSelect: gender,
               callBack: callBack,
-            })
-          }
+            });
+          }}
         />
+        <DropDownBox
+          label={strings.relation_lbl}
+          value={relation}
+          catchError={{
+            error: error.relation,
+            message: strings.relation_error_message,
+          }}
+          onPress={() => {
+            setError({...error, ['relation']: ''});
+            navigation.navigate('DropDown', {
+              data: relationData,
+              title: strings.relation_title,
+              name: strings.relation_lbl,
+              previousSelect: relation,
+              callBack: callBack,
+            });
+          }}
+        />
+        <DropDownBox
+          label={strings.date_lbl}
+          value={date}
+          catchError={{
+            error: error.date,
+            message: strings.date_error_message,
+          }}
+          onPress={() => {
+            setError({...error, ['date']: ''});
+            showDatePicker();
+          }}
+        />
+        <DateTimePickerModal
+          isVisible={isDatePickerVisible}
+          mode="date"
+          onConfirm={handleConfirm}
+          onCancel={hideDatePicker}
+        />
+
         <TouchableOpacity
           style={style.loginBtn}
           activeOpacity={0.8}
           onPress={() => validation()}>
-          <Text style={style.loginTxt}>Login</Text>
+          <Text style={style.loginTxt}>{strings.login_lbl}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
