@@ -52,6 +52,7 @@ const LoginPage = () => {
       <Text style={style.titleLabel}>{strings.login_title}</Text>
       <CustomBox
         value={userEmail}
+        placeHolder={'Email'}
         onChangeText={(e: string) => setEmail(e)}
         ref={refBox1}
         autoFocus={true}
@@ -65,11 +66,12 @@ const LoginPage = () => {
         onSubmitEditing={() => refBox2.current.focus()}
       />
       {error.userEmail == 'ValidationError' && (
-        <Text>{strings.email_error_message}</Text>
+        <Text style={style.errorMessage}>{strings.email_error_message}</Text>
       )}
       <CustomBox
         value={userName}
         ref={refBox2}
+        placeHolder={'Email'}
         onChangeText={(e: string) => setName(e)}
         onKeyPress={(e: any) => {
           e.nativeEvent.key === KEY_BACKSPACE
@@ -81,7 +83,7 @@ const LoginPage = () => {
         onSubmitEditing={() => Keyboard.dismiss()}
       />
       {error.userName == 'ValidationError' && (
-        <Text>{strings.name_error_message}</Text>
+        <Text style={style.errorMessage}>{strings.name_error_message}</Text>
       )}
       <TouchableOpacity
         style={style.loginBtn}
@@ -115,6 +117,11 @@ const style = StyleSheet.create({
   loginTxt: {
     fontSize: vw(15),
     color: colors.white,
+  },
+  errorMessage: {
+    color: colors.red,
+    fontSize: vw(15),
+    marginVertical: vh(5),
   },
 });
 export default LoginPage;

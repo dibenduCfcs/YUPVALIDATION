@@ -14,6 +14,7 @@ const CustomBox = (props: any, ref: any) => {
         onKeyPress={props.onKeyPress}
         onChangeText={e => props.onChangeText(e)}
         onSubmitEditing={props.onSubmitEditing}
+        placeholder={props.placeHolder}
       />
       {/* {props['right']&&<View><Image/></View>} */}
     </View>
