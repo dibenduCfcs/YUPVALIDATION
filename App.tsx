@@ -1,7 +1,7 @@
 import React from 'react';
-import LoginPage from './src/screen/LoginPage';
+import NavigationFile from './src/root navigator';
 
 const App = () => {
-  return <LoginPage />;
+  return <NavigationFile />;
 };
 export default App;
