@@ -1,4 +1,4 @@
-import {createRef, useCallback, useEffect, useState} from 'react';
+import {createRef, useCallback, useState} from 'react';
 import {
   Keyboard,
   StyleSheet,
@@ -11,29 +11,38 @@ import {
 import * as yup from 'yup';
 import CustomBox from '../components/CustomBox';
 import DropDownBox from '../components/DropDownBox';
+import CustomDateTimePicker from '../components/CustomDateTimePicker';
 import {colors, strings, dimensions, fonts} from '../utils';
 import {emailRegex} from '../utils/validation';
-import CustomDateTimePicker from '../components/CustomDateTimePicker';
 import {genderData, relationData} from '../constants';
-const {vw, vh} = dimensions;
 LogBox.ignoreAllLogs();
+const {vw, vh} = dimensions;
 const LoginPage = ({navigation}: any) => {
   const [userEmail, setEmail] = useState('');
   const [userName, setName] = useState('');
   const [gender, setGender] = useState('');
   const [relation, setRelation] = useState('');
   const [date, setDate] = useState('');
-  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
-  const showDatePicker = () => {
-    setDatePickerVisible(true);
+  const [lessThanDate, setLessThanDate] = useState('');
+  const [isDatePickerVisible, setDatePickerVisible] = useState({
+    [strings.date_lbl]: false,
+    [strings.date_less_than_lbl]: false,
+  });
+
+  const showDatePicker = (objName: string) => {
+    setDatePickerVisible({...isDatePickerVisible, [objName]: true});
   };
-  const hideDatePicker = () => {
-    setDatePickerVisible(false);
+  const hideDatePicker = (objName: string) => {
+    setDatePickerVisible({...isDatePickerVisible, [objName]: false});
   };
-  const handleConfirm = (date: Date) => {
+  const setDateObj = {
+    [strings.date_lbl]: setDate,
+    [strings.date_less_than_lbl]: setLessThanDate,
+  };
+  const handleConfirm = (date: Date, objName: string) => {
     const new_date = date.toLocaleDateString();
-    setDate(new_date);
-    hideDatePicker();
+    setDateObj[objName](new_date);
+    hideDatePicker(objName);
   };
   const errorHandleFunc = () => {
     setError({
@@ -57,6 +66,7 @@ const LoginPage = ({navigation}: any) => {
   const validation = () => {
     try {
       let schema = yup.object().shape({
+        lessdate: yup.string().nullable().required(),
         date: yup.string().nullable().required(),
         relation: yup.string().nullable().required(),
         gender: yup.string().nullable().required(),
@@ -69,6 +79,7 @@ const LoginPage = ({navigation}: any) => {
         gender: gender,
         relation: relation,
         date: date,
+        lessdate: date,
       });
       errorHandleFunc();
     } catch (err: any) {
@@ -100,7 +111,6 @@ const LoginPage = ({navigation}: any) => {
             setError({...error, userEmail: userEmail});
           }}
           ref={refBox1}
-          autoFocus={true}
           catchError={{
             error: error.userEmail,
             message: strings.email_error_message,
@@ -175,17 +185,35 @@ const LoginPage = ({navigation}: any) => {
         <CustomDateTimePicker
           label={strings.date_lbl}
           value={date}
-          isVisible={isDatePickerVisible}
+          isVisible={isDatePickerVisible[strings.date_lbl]}
           mode="date"
-          onConfirm={handleConfirm}
-          onCancel={hideDatePicker}
+          onConfirm={(date: Date) => handleConfirm(date, strings.date_lbl)}
+          onCancel={() => hideDatePicker(strings.date_lbl)}
           catchError={{
             error: error.date,
             message: strings.date_error_message,
           }}
           onPress={() => {
             setError({...error, ['date']: ''});
-            showDatePicker();
+            showDatePicker(strings.date_lbl);
+          }}
+        />
+        <CustomDateTimePicker
+          label={strings.date_less_than_lbl}
+          value={lessThanDate}
+          isVisible={isDatePickerVisible[strings.date_less_than_lbl]}
+          mode="date"
+          onConfirm={(date: Date) =>
+            handleConfirm(date, strings.date_less_than_lbl)
+          }
+          onCancel={() => hideDatePicker(strings.date_less_than_lbl)}
+          catchError={{
+            error: error.date,
+            message: strings.date_error_message,
+          }}
+          onPress={() => {
+            setError({...error, ['date']: ''});
+            showDatePicker(strings.date_less_than_lbl);
           }}
         />
         <TouchableOpacity

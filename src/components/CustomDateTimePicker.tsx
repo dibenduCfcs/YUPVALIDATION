@@ -20,7 +20,7 @@ const CustomDateTimePicker = (props: any) => {
       )}
       <DateTimePickerModal
         isVisible={props.isVisible}
-        mode="date"
+        mode={props.mode}
         onConfirm={props.onConfirm}
         onCancel={props.onCancel}
       />

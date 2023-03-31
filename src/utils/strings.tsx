@@ -13,4 +13,6 @@ export default {
   relation_error_message: "Relation Can't be Empty ",
   date_error_message: "Date Can't be Null ",
   date_lbl: 'Date',
+  date_less_than_lbl: 'Less Than Date',
+
 };
