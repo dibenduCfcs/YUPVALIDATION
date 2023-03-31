@@ -1,5 +1,5 @@
 import React from 'react';
-import NavigationFile from './src/root navigator';
+import NavigationFile from './src/routes';
 
 const App = () => {
   return <NavigationFile />;

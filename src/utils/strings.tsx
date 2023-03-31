@@ -9,8 +9,8 @@ export default {
   email_lbl: 'Email',
   name_lbl: 'Name',
   relation_lbl: 'Relation',
-  relation_title: 'Choose Gender Relation',
-  relation_error_message: "Gender Can't be Empty ",
+  relation_title: 'Choose Relation Title',
+  relation_error_message: "Relation Can't be Empty ",
   date_error_message: "Date Can't be Null ",
   date_lbl: 'Date',
 };

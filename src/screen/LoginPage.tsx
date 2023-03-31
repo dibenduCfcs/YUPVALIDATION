@@ -9,33 +9,13 @@ import {
   View,
 } from 'react-native';
 import * as yup from 'yup';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import CustomBox from '../components/CustomBox';
 import DropDownBox from '../components/DropDownBox';
 import {colors, strings, dimensions, fonts} from '../utils';
+import {emailRegex} from '../utils/validation';
+import CustomDateTimePicker from '../components/CustomDateTimePicker';
+import {genderData, relationData} from '../constants';
 const {vw, vh} = dimensions;
-const genderData = [
-  {
-    label: 'Male',
-  },
-  {
-    label: 'Female',
-  },
-];
-const relationData = [
-  {
-    label: 'Mother',
-  },
-  {
-    label: 'Father',
-  },
-  {
-    label: 'Brother',
-  },
-  {
-    label: 'Sister',
-  },
-];
 LogBox.ignoreAllLogs();
 const LoginPage = ({navigation}: any) => {
   const [userEmail, setEmail] = useState('');
@@ -81,13 +61,7 @@ const LoginPage = ({navigation}: any) => {
         relation: yup.string().nullable().required(),
         gender: yup.string().nullable().required(),
         userName: yup.string().nullable().required(),
-        userEmail: yup
-          .string()
-          .nullable()
-          .matches(
-            /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-          )
-          .required(),
+        userEmail: yup.string().nullable().matches(emailRegex).required(),
       });
       schema.validateSync({
         userEmail: userEmail,
@@ -198,9 +172,13 @@ const LoginPage = ({navigation}: any) => {
             });
           }}
         />
-        <DropDownBox
+        <CustomDateTimePicker
           label={strings.date_lbl}
           value={date}
+          isVisible={isDatePickerVisible}
+          mode="date"
+          onConfirm={handleConfirm}
+          onCancel={hideDatePicker}
           catchError={{
             error: error.date,
             message: strings.date_error_message,
@@ -210,13 +188,6 @@ const LoginPage = ({navigation}: any) => {
             showDatePicker();
           }}
         />
-        <DateTimePickerModal
-          isVisible={isDatePickerVisible}
-          mode="date"
-          onConfirm={handleConfirm}
-          onCancel={hideDatePicker}
-        />
-
         <TouchableOpacity
           style={style.loginBtn}
           activeOpacity={0.8}
