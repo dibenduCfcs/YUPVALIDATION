@@ -23,36 +23,9 @@ const LoginPage = ({navigation}: any) => {
   const [gender, setGender] = useState('');
   const [relation, setRelation] = useState('');
   const [date, setDate] = useState('');
-  const [lessThanDate, setLessThanDate] = useState('');
-  const [isDatePickerVisible, setDatePickerVisible] = useState({
-    [strings.date_lbl]: false,
-    [strings.date_less_than_lbl]: false,
-  });
-
-  const showDatePicker = (objName: string) => {
-    setDatePickerVisible({...isDatePickerVisible, [objName]: true});
-  };
-  const hideDatePicker = (objName: string) => {
-    setDatePickerVisible({...isDatePickerVisible, [objName]: false});
-  };
-  const setDateObj = {
-    [strings.date_lbl]: setDate,
-    [strings.date_less_than_lbl]: setLessThanDate,
-  };
-  const handleConfirm = (date: Date, objName: string) => {
-    const new_date = date.toLocaleDateString();
-    setDateObj[objName](new_date);
-    hideDatePicker(objName);
-  };
-  const errorHandleFunc = () => {
-    setError({
-      userName: '',
-      userEmail: '',
-      gender: '',
-      relation: '',
-      date: '',
-    });
-  };
+  const [minDate, setMinDate] = useState('');
+  const [maxDate, setMaxDate] = useState('');
+  const [currDate, setCurrDate] = useState('');
   const [error, setError] = useState({
     userName: '',
     userEmail: '',
@@ -63,6 +36,15 @@ const LoginPage = ({navigation}: any) => {
   const refBox1: any = createRef();
   const refBox2: any = createRef();
   const KEY_BACKSPACE = 'Backspace';
+  const errorHandleFunc = () => {
+    setError({
+      userName: '',
+      userEmail: '',
+      gender: '',
+      relation: '',
+      date: '',
+    });
+  };
   const validation = () => {
     try {
       let schema = yup.object().shape({
@@ -185,35 +167,57 @@ const LoginPage = ({navigation}: any) => {
         <CustomDateTimePicker
           label={strings.date_lbl}
           value={date}
-          isVisible={isDatePickerVisible[strings.date_lbl]}
+          onChangeDate={setDate}
           mode="date"
-          onConfirm={(date: Date) => handleConfirm(date, strings.date_lbl)}
-          onCancel={() => hideDatePicker(strings.date_lbl)}
           catchError={{
             error: error.date,
             message: strings.date_error_message,
           }}
           onPress={() => {
             setError({...error, ['date']: ''});
-            showDatePicker(strings.date_lbl);
           }}
         />
         <CustomDateTimePicker
           label={strings.date_less_than_lbl}
-          value={lessThanDate}
-          isVisible={isDatePickerVisible[strings.date_less_than_lbl]}
+          value={minDate}
+          onChangeDate={setMinDate}
           mode="date"
-          onConfirm={(date: Date) =>
-            handleConfirm(date, strings.date_less_than_lbl)
-          }
-          onCancel={() => hideDatePicker(strings.date_less_than_lbl)}
+          minimumDate={new Date(2023, 0, 1)}
           catchError={{
             error: error.date,
             message: strings.date_error_message,
           }}
           onPress={() => {
             setError({...error, ['date']: ''});
-            showDatePicker(strings.date_less_than_lbl);
+          }}
+        />
+        <CustomDateTimePicker
+          label={strings.date_greater_than_lbl}
+          value={maxDate}
+          onChangeDate={setMaxDate}
+          mode="date"
+          maximumDate={new Date(2023, 11, 31)}
+          catchError={{
+            error: error.date,
+            message: strings.date_error_message,
+          }}
+          onPress={() => {
+            setError({...error, ['date']: ''});
+          }}
+        />
+        <CustomDateTimePicker
+          label={strings.date_current_lbl}
+          value={currDate}
+          onChangeDate={setCurrDate}
+          mode="date"
+          minimumDate={new Date()}
+          maximumDate={new Date()}
+          catchError={{
+            error: error.date,
+            message: strings.date_error_message,
+          }}
+          onPress={() => {
+            setError({...error, ['date']: ''});
           }}
         />
         <TouchableOpacity
@@ -228,7 +232,6 @@ const LoginPage = ({navigation}: any) => {
 };
 const style = StyleSheet.create({
   mainContainer: {
-    height: vh(778),
     backgroundColor: colors.white,
     alignItems: 'center',
   },
@@ -239,6 +242,7 @@ const style = StyleSheet.create({
     fontFamily: fonts.IBM_Medium,
   },
   loginBtn: {
+    marginVertical: vw(15),
     width: vw(250),
     height: vh(50),
     backgroundColor: colors.blue,

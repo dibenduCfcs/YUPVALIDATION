@@ -14,5 +14,6 @@ export default {
   date_error_message: "Date Can't be Null ",
   date_lbl: 'Date',
   date_less_than_lbl: 'Less Than Date',
-
+  date_greater_than_lbl: 'Greater Than Date',
+  date_current_lbl: 'Current Date',
 };
