@@ -16,4 +16,6 @@ export default {
   date_less_than_lbl: 'Less Than Date',
   date_greater_than_lbl: 'Greater Than Date',
   date_current_lbl: 'Current Date',
+  min_date_error_message: 'Please Select the date above 01 Jan 2023',
+  max_date_error_message: 'Please Select the date below 01 Jan 2024',
 };

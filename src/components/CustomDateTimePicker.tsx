@@ -6,7 +6,7 @@ import {useState} from 'react';
 const {vw, vh} = dimensions;
 const CustomDateTimePicker = (props: any) => {
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
-
+  const [errorMessage, setErrorMesaage] = useState('');
   const showDatePicker = () => {
     setDatePickerVisible(true);
   };
@@ -15,7 +15,11 @@ const CustomDateTimePicker = (props: any) => {
   };
   const handleConfirm = (date: Date) => {
     const new_date = date.toLocaleDateString();
-    props.onChangeDate(new_date);
+    props.validation != undefined
+      ? props.validation.validate(date, setErrorMesaage)
+        ? props.onChangeDate(new_date)
+        : props.onChangeDate('')
+      : props.onChangeDate(new_date);
     hideDatePicker();
   };
   const error = 'ValidationError';
@@ -33,6 +37,9 @@ const CustomDateTimePicker = (props: any) => {
       </TouchableOpacity>
       {props.catchError.error == error && (
         <Text style={style.errorMessage}>{props.catchError.message}</Text>
+      )}
+      {props.validation != undefined && errorMessage != '' && (
+        <Text style={style.errorMessage}>{errorMessage}</Text>
       )}
       <DateTimePickerModal
         isVisible={isDatePickerVisible}

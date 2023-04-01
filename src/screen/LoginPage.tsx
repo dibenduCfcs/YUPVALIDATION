@@ -25,6 +25,7 @@ const LoginPage = ({navigation}: any) => {
   const [date, setDate] = useState('');
   const [minDate, setMinDate] = useState('');
   const [maxDate, setMaxDate] = useState('');
+  const [minMaxDate, setMinMaxDate] = useState('');
   const [currDate, setCurrDate] = useState('');
   const [error, setError] = useState({
     userName: '',
@@ -32,6 +33,10 @@ const LoginPage = ({navigation}: any) => {
     gender: '',
     relation: '',
     date: '',
+    minDate: '',
+    maxDate: '',
+    minMaxDate: '',
+    currDate: '',
   });
   const refBox1: any = createRef();
   const refBox2: any = createRef();
@@ -43,7 +48,111 @@ const LoginPage = ({navigation}: any) => {
       gender: '',
       relation: '',
       date: '',
+      minDate: '',
+      maxDate: '',
+      minMaxDate: '',
+      currDate: '',
     });
+  };
+  const currDateValidation = (date: Date, setErrorMessage: Function) => {
+    try {
+      let schema = yup.object().shape({
+        currDate: yup.date().test('true', 'false', (date: any) => {
+          if (new Date().toLocaleDateString() != date.toLocaleDateString()) {
+            setErrorMessage(strings.max_date_error_message);
+            return false;
+          } else {
+            return true;
+          }
+        }),
+      });
+      schema.validateSync({
+        currDate: date,
+      });
+      errorHandleFunc();
+      setErrorMessage('');
+      return true;
+    } catch (err: any) {
+      errorHandleFunc();
+      setError({...error, [err.path]: err.name});
+      return false;
+    }
+  };
+  const minMaxDateValidation = (date: Date, setErrorMessage: Function) => {
+    try {
+      let schema = yup.object().shape({
+        minMaxDate: yup.date().test('true', 'false', (date: any) => {
+          if (new Date(2023, 0, 1).getTime() > date.getTime()) {
+            setErrorMessage(strings.min_date_error_message);
+            return false;
+          } else if (new Date(2024, 0, 1).getTime() < date.getTime()) {
+            setErrorMessage(strings.max_date_error_message);
+            return false;
+          } else {
+            return true;
+          }
+        }),
+      });
+      schema.validateSync({
+        minMaxDate: date,
+      });
+      errorHandleFunc();
+      setErrorMessage('');
+      return true;
+    } catch (err: any) {
+      errorHandleFunc();
+      setError({...error, [err.path]: err.name});
+      return false;
+    }
+  };
+  const maxDateValidation = (date: Date, setErrorMessage: Function) => {
+    try {
+      let schema = yup.object().shape({
+        maxDate: yup.date().test('true', 'false', (date: any) => {
+          if (new Date(2024, 0, 1).getTime() < date.getTime()) {
+            setErrorMessage(strings.max_date_error_message);
+            return false;
+          } else {
+            return true;
+          }
+        }),
+      });
+      schema.validateSync({
+        maxDate: date,
+      });
+      errorHandleFunc();
+      setErrorMessage('');
+      return true;
+    } catch (err: any) {
+      errorHandleFunc();
+      setError({...error, [err.path]: err.name});
+      return false;
+    }
+  };
+  const minDateValidation = (date: Date, setErrorMessage: Function) => {
+    try {
+      let schema = yup.object().shape({
+        minDate: yup.date().test('true', 'false', (date: any) => {
+          if (new Date(2023, 0, 1).getTime() > date.getTime()) {
+            setErrorMessage(strings.min_date_error_message);
+            return false;
+          } else {
+            return true;
+          }
+        }),
+      });
+      schema.validateSync({
+        minDate: date,
+      });
+      errorHandleFunc();
+      setErrorMessage('');
+      return true;
+    } catch (err: any) {
+      console.log(err.path);
+      errorHandleFunc();
+      setError({...error, [err.path]: err.name});
+      return false;
+    }
   };
   const validation = () => {
     try {
@@ -180,44 +289,71 @@ const LoginPage = ({navigation}: any) => {
         <CustomDateTimePicker
           label={strings.date_less_than_lbl}
           value={minDate}
+          validation={{
+            validate: minDateValidation,
+          }}
           onChangeDate={setMinDate}
           mode="date"
-          minimumDate={new Date(2023, 0, 1)}
+          // minimumDate={new Date(2023, 0, 1)}
           catchError={{
-            error: error.date,
+            error: error.minDate,
             message: strings.date_error_message,
           }}
           onPress={() => {
-            setError({...error, ['date']: ''});
+            setError({...error, ['minDate']: ''});
           }}
         />
         <CustomDateTimePicker
           label={strings.date_greater_than_lbl}
           value={maxDate}
+          validation={{
+            validate: maxDateValidation,
+          }}
           onChangeDate={setMaxDate}
           mode="date"
-          maximumDate={new Date(2023, 11, 31)}
+          // maximumDate={new Date(2023, 11, 31)}
           catchError={{
-            error: error.date,
+            error: error.maxDate,
             message: strings.date_error_message,
           }}
           onPress={() => {
-            setError({...error, ['date']: ''});
+            setError({...error, ['maxDate']: ''});
+          }}
+        />
+        <CustomDateTimePicker
+          label={strings.date_current_lbl}
+          value={minMaxDate}
+          validation={{
+            validate: minMaxDateValidation,
+          }}
+          onChangeDate={setMinMaxDate}
+          mode="date"
+          // minimumDate={new Date()}
+          // maximumDate={new Date()}
+          catchError={{
+            error: error.minMaxDate,
+            message: strings.date_error_message,
+          }}
+          onPress={() => {
+            setError({...error, ['minMaxDate']: ''});
           }}
         />
         <CustomDateTimePicker
           label={strings.date_current_lbl}
           value={currDate}
+          validation={{
+            validate: currDateValidation,
+          }}
           onChangeDate={setCurrDate}
           mode="date"
-          minimumDate={new Date()}
-          maximumDate={new Date()}
+          // minimumDate={new Date()}
+          // maximumDate={new Date()}
           catchError={{
-            error: error.date,
+            error: error.currDate,
             message: strings.date_error_message,
           }}
           onPress={() => {
-            setError({...error, ['date']: ''});
+            setError({...error, ['currDate']: ''});
           }}
         />
         <TouchableOpacity
