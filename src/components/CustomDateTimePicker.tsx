@@ -1,12 +1,65 @@
 import {Image, StyleSheet, Text, TouchableOpacity} from 'react-native';
-import {colors, dimensions, fonts} from '../utils';
+import {colors, dimensions, fonts, strings} from '../utils';
+import * as yup from 'yup';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import images from '../utils/images';
 import {useState} from 'react';
 const {vw, vh} = dimensions;
 const CustomDateTimePicker = (props: any) => {
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
-  const [errorMessage, setErrorMesaage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const check = (date: Date) => {
+    switch (props.validation.type) {
+      case 'minDate': {
+        if (new Date(2023, 0, 1).getTime() > date.getTime()) {
+          setErrorMessage(strings.min_date_error_message);
+          return false;
+        }
+        return true;
+      }
+      case 'maxDate': {
+        if (new Date(2024, 0, 1).getTime() < date.getTime()) {
+          setErrorMessage(strings.max_date_error_message);
+          return false;
+        }
+        return true;
+      }
+      case 'minMaxDate': {
+        if (new Date(2023, 0, 1).getTime() > date.getTime()) {
+          setErrorMessage(strings.min_date_error_message);
+          return false;
+        } else if (new Date(2024, 0, 1).getTime() < date.getTime()) {
+          setErrorMessage(strings.max_date_error_message);
+          return false;
+        }
+        return true;
+      }
+      case 'currDate': {
+        if (new Date().toLocaleDateString() != date.toLocaleDateString()) {
+          setErrorMessage(strings.max_date_error_message);
+          return false;
+        }
+        return true;
+      }
+    }
+  };
+  const validation = (date: Date) => {
+    try {
+      let schema = yup.object().shape({
+        date: yup.date().test('true', 'false', (date: any) => {
+          return check(date);
+        }),
+      });
+      schema.validateSync({
+        date: date,
+      });
+      setErrorMessage('');
+      return true;
+    } catch (err: any) {
+      return false;
+    }
+  };
   const showDatePicker = () => {
     setDatePickerVisible(true);
   };
@@ -16,7 +69,7 @@ const CustomDateTimePicker = (props: any) => {
   const handleConfirm = (date: Date) => {
     const new_date = date.toLocaleDateString();
     props.validation != undefined
-      ? props.validation.validate(date, setErrorMesaage)
+      ? validation(date)
         ? props.onChangeDate(new_date)
         : props.onChangeDate('')
       : props.onChangeDate(new_date);
@@ -30,7 +83,9 @@ const CustomDateTimePicker = (props: any) => {
         style={style.boxContainer}
         activeOpacity={0.8}
         onPress={() => {
-          props.onPress, showDatePicker();
+          props.onPress();
+          setErrorMessage('');
+          showDatePicker();
         }}>
         <Text style={style.label}>{props.value}</Text>
         <Image source={images.dropDownIcon} style={style.dropDownIcon} />

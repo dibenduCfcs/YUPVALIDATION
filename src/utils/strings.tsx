@@ -18,4 +18,6 @@ export default {
   date_current_lbl: 'Current Date',
   min_date_error_message: 'Please Select the date above 01 Jan 2023',
   max_date_error_message: 'Please Select the date below 01 Jan 2024',
+  datetimepicker_mode_date: 'Date',
+  datetimepicker_mode_time: 'Time',
 };

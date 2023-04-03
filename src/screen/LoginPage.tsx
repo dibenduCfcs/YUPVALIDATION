@@ -54,111 +54,14 @@ const LoginPage = ({navigation}: any) => {
       currDate: '',
     });
   };
-  const currDateValidation = (date: Date, setErrorMessage: Function) => {
-    try {
-      let schema = yup.object().shape({
-        currDate: yup.date().test('true', 'false', (date: any) => {
-          if (new Date().toLocaleDateString() != date.toLocaleDateString()) {
-            setErrorMessage(strings.max_date_error_message);
-            return false;
-          } else {
-            return true;
-          }
-        }),
-      });
-      schema.validateSync({
-        currDate: date,
-      });
-      errorHandleFunc();
-      setErrorMessage('');
-      return true;
-    } catch (err: any) {
-      errorHandleFunc();
-      setError({...error, [err.path]: err.name});
-      return false;
-    }
-  };
-  const minMaxDateValidation = (date: Date, setErrorMessage: Function) => {
-    try {
-      let schema = yup.object().shape({
-        minMaxDate: yup.date().test('true', 'false', (date: any) => {
-          if (new Date(2023, 0, 1).getTime() > date.getTime()) {
-            setErrorMessage(strings.min_date_error_message);
-            return false;
-          } else if (new Date(2024, 0, 1).getTime() < date.getTime()) {
-            setErrorMessage(strings.max_date_error_message);
-            return false;
-          } else {
-            return true;
-          }
-        }),
-      });
-      schema.validateSync({
-        minMaxDate: date,
-      });
-      errorHandleFunc();
-      setErrorMessage('');
-      return true;
-    } catch (err: any) {
-      errorHandleFunc();
-      setError({...error, [err.path]: err.name});
-      return false;
-    }
-  };
-  const maxDateValidation = (date: Date, setErrorMessage: Function) => {
-    try {
-      let schema = yup.object().shape({
-        maxDate: yup.date().test('true', 'false', (date: any) => {
-          if (new Date(2024, 0, 1).getTime() < date.getTime()) {
-            setErrorMessage(strings.max_date_error_message);
-            return false;
-          } else {
-            return true;
-          }
-        }),
-      });
-      schema.validateSync({
-        maxDate: date,
-      });
-      errorHandleFunc();
-      setErrorMessage('');
-      return true;
-    } catch (err: any) {
-      errorHandleFunc();
-      setError({...error, [err.path]: err.name});
-      return false;
-    }
-  };
-  const minDateValidation = (date: Date, setErrorMessage: Function) => {
-    try {
-      let schema = yup.object().shape({
-        minDate: yup.date().test('true', 'false', (date: any) => {
-          if (new Date(2023, 0, 1).getTime() > date.getTime()) {
-            setErrorMessage(strings.min_date_error_message);
-            return false;
-          } else {
-            return true;
-          }
-        }),
-      });
-      schema.validateSync({
-        minDate: date,
-      });
-      errorHandleFunc();
-      setErrorMessage('');
-      return true;
-    } catch (err: any) {
-      console.log(err.path);
-      errorHandleFunc();
-      setError({...error, [err.path]: err.name});
-      return false;
-    }
-  };
   const validation = () => {
     try {
       let schema = yup.object().shape({
-        lessdate: yup.string().nullable().required(),
-        date: yup.string().nullable().required(),
+        currDate: yup.string().required(),
+        minMaxDate: yup.string().required(),
+        maxDate: yup.string().required(),
+        minDate: yup.string().required(),
+        date: yup.string().required(),
         relation: yup.string().nullable().required(),
         gender: yup.string().nullable().required(),
         userName: yup.string().nullable().required(),
@@ -170,7 +73,10 @@ const LoginPage = ({navigation}: any) => {
         gender: gender,
         relation: relation,
         date: date,
-        lessdate: date,
+        minDate: minDate,
+        maxDate: maxDate,
+        minMaxDate: minMaxDate,
+        currDate: currDate,
       });
       errorHandleFunc();
     } catch (err: any) {
@@ -245,7 +151,7 @@ const LoginPage = ({navigation}: any) => {
             message: strings.gender_error_message,
           }}
           onPress={() => {
-            setError({...error, ['gender']: ''});
+            setError({...error, gender: ''});
             navigation.navigate('DropDown', {
               data: genderData,
               title: strings.gender_title,
@@ -263,7 +169,7 @@ const LoginPage = ({navigation}: any) => {
             message: strings.relation_error_message,
           }}
           onPress={() => {
-            setError({...error, ['relation']: ''});
+            setError({...error, relation: ''});
             navigation.navigate('DropDown', {
               data: relationData,
               title: strings.relation_title,
@@ -277,89 +183,83 @@ const LoginPage = ({navigation}: any) => {
           label={strings.date_lbl}
           value={date}
           onChangeDate={setDate}
-          mode="date"
+          mode={strings.datetimepicker_mode_date}
           catchError={{
             error: error.date,
             message: strings.date_error_message,
           }}
           onPress={() => {
-            setError({...error, ['date']: ''});
+            setError({...error, date: ''});
           }}
         />
         <CustomDateTimePicker
           label={strings.date_less_than_lbl}
           value={minDate}
           validation={{
-            validate: minDateValidation,
+            type: 'minDate',
           }}
           onChangeDate={setMinDate}
-          mode="date"
-          // minimumDate={new Date(2023, 0, 1)}
+          mode={strings.datetimepicker_mode_date}
           catchError={{
             error: error.minDate,
             message: strings.date_error_message,
           }}
           onPress={() => {
-            setError({...error, ['minDate']: ''});
+            setError({...error, minDate: ''});
           }}
         />
         <CustomDateTimePicker
           label={strings.date_greater_than_lbl}
           value={maxDate}
           validation={{
-            validate: maxDateValidation,
+            type: 'maxDate',
           }}
           onChangeDate={setMaxDate}
-          mode="date"
-          // maximumDate={new Date(2023, 11, 31)}
+          mode={strings.datetimepicker_mode_date}
           catchError={{
             error: error.maxDate,
             message: strings.date_error_message,
           }}
           onPress={() => {
-            setError({...error, ['maxDate']: ''});
+            setError({...error, maxDate: ''});
           }}
         />
         <CustomDateTimePicker
           label={strings.date_current_lbl}
           value={minMaxDate}
           validation={{
-            validate: minMaxDateValidation,
+            type: 'minMaxDate',
           }}
           onChangeDate={setMinMaxDate}
-          mode="date"
-          // minimumDate={new Date()}
-          // maximumDate={new Date()}
+          mode={strings.datetimepicker_mode_date}
           catchError={{
             error: error.minMaxDate,
             message: strings.date_error_message,
           }}
           onPress={() => {
-            setError({...error, ['minMaxDate']: ''});
+            setError({...error, minMaxDate: ''});
           }}
         />
         <CustomDateTimePicker
           label={strings.date_current_lbl}
           value={currDate}
           validation={{
-            validate: currDateValidation,
+            type: 'currDate',
           }}
           onChangeDate={setCurrDate}
-          mode="date"
-          // minimumDate={new Date()}
-          // maximumDate={new Date()}
+          mode={strings.datetimepicker_mode_date}
           catchError={{
             error: error.currDate,
             message: strings.date_error_message,
           }}
           onPress={() => {
-            setError({...error, ['currDate']: ''});
+            setError({...error, currDate: ''});
           }}
         />
         <TouchableOpacity
           style={style.loginBtn}
           activeOpacity={0.8}
-          onPress={() => validation()}>
+          onPress={validation}>
           <Text style={style.loginTxt}>{strings.login_lbl}</Text>
         </TouchableOpacity>
       </View>
