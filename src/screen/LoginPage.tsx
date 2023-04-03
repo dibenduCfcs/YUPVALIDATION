@@ -18,6 +18,7 @@ import {genderData, relationData} from '../constants';
 LogBox.ignoreAllLogs();
 const {vw, vh} = dimensions;
 const LoginPage = ({navigation}: any) => {
+  // Local States
   const [userEmail, setEmail] = useState('');
   const [userName, setName] = useState('');
   const [gender, setGender] = useState('');
@@ -27,7 +28,7 @@ const LoginPage = ({navigation}: any) => {
   const [maxDate, setMaxDate] = useState('');
   const [minMaxDate, setMinMaxDate] = useState('');
   const [currDate, setCurrDate] = useState('');
-  const [error, setError] = useState({
+  const [errorState, setErrorState] = useState({
     userName: '',
     userEmail: '',
     gender: '',
@@ -38,11 +39,15 @@ const LoginPage = ({navigation}: any) => {
     minMaxDate: '',
     currDate: '',
   });
+
+  // Reference Functions
   const refBox1: any = createRef();
   const refBox2: any = createRef();
   const KEY_BACKSPACE = 'Backspace';
+
+  // Error Handling Function
   const errorHandleFunc = () => {
-    setError({
+    setErrorState({
       userName: '',
       userEmail: '',
       gender: '',
@@ -54,6 +59,8 @@ const LoginPage = ({navigation}: any) => {
       currDate: '',
     });
   };
+
+  // Form Validation on Login Button
   const validation = () => {
     try {
       let schema = yup.object().shape({
@@ -81,9 +88,11 @@ const LoginPage = ({navigation}: any) => {
       errorHandleFunc();
     } catch (err: any) {
       errorHandleFunc();
-      setError({...error, [err.path]: err.name});
+      setErrorState({...errorState, [err.path]: err.name});
     }
   };
+
+  // Callback function for DropDownModel
   const callBack = useCallback((state: any) => {
     switch (state.calledComponent) {
       case strings.gender_lbl:
@@ -94,7 +103,7 @@ const LoginPage = ({navigation}: any) => {
         break;
     }
   }, []);
-  console.log('error', error);
+  console.log('error', errorState);
   return (
     <ScrollView>
       <View style={style.mainContainer}>
@@ -105,11 +114,11 @@ const LoginPage = ({navigation}: any) => {
           placeHolder={strings.email_lbl}
           onChangeText={(e: string) => {
             setEmail(e);
-            setError({...error, userEmail: userEmail});
+            setErrorState({...errorState, userEmail: userEmail});
           }}
           ref={refBox1}
           catchError={{
-            error: error.userEmail,
+            error: errorState.userEmail,
             message: strings.email_error_message,
           }}
           onKeyPress={(e: any) => {
@@ -126,13 +135,13 @@ const LoginPage = ({navigation}: any) => {
           label={strings.name_lbl}
           value={userName}
           catchError={{
-            error: error.userName,
+            error: errorState.userName,
             message: strings.name_error_message,
           }}
           ref={refBox2}
           placeHolder={strings.name_lbl}
           onChangeText={(e: string) => {
-            setName(e), setError({...error, userName: userName});
+            setName(e), setErrorState({...errorState, userName: userName});
           }}
           onKeyPress={(e: any) => {
             e.nativeEvent.key === KEY_BACKSPACE
@@ -147,11 +156,11 @@ const LoginPage = ({navigation}: any) => {
           label={strings.gender_lbl}
           value={gender}
           catchError={{
-            error: error.gender,
+            error: errorState.gender,
             message: strings.gender_error_message,
           }}
           onPress={() => {
-            setError({...error, gender: ''});
+            setErrorState({...errorState, gender: ''});
             navigation.navigate('DropDown', {
               data: genderData,
               title: strings.gender_title,
@@ -165,11 +174,11 @@ const LoginPage = ({navigation}: any) => {
           label={strings.relation_lbl}
           value={relation}
           catchError={{
-            error: error.relation,
+            error: errorState.relation,
             message: strings.relation_error_message,
           }}
           onPress={() => {
-            setError({...error, relation: ''});
+            setErrorState({...errorState, relation: ''});
             navigation.navigate('DropDown', {
               data: relationData,
               title: strings.relation_title,
@@ -185,11 +194,11 @@ const LoginPage = ({navigation}: any) => {
           onChangeDate={setDate}
           mode={strings.datetimepicker_mode_date}
           catchError={{
-            error: error.date,
+            error: errorState.date,
             message: strings.date_error_message,
           }}
           onPress={() => {
-            setError({...error, date: ''});
+            setErrorState({...errorState, date: ''});
           }}
         />
         <CustomDateTimePicker
@@ -201,11 +210,11 @@ const LoginPage = ({navigation}: any) => {
           onChangeDate={setMinDate}
           mode={strings.datetimepicker_mode_date}
           catchError={{
-            error: error.minDate,
+            error: errorState.minDate,
             message: strings.date_error_message,
           }}
           onPress={() => {
-            setError({...error, minDate: ''});
+            setErrorState({...errorState, minDate: ''});
           }}
         />
         <CustomDateTimePicker
@@ -217,11 +226,11 @@ const LoginPage = ({navigation}: any) => {
           onChangeDate={setMaxDate}
           mode={strings.datetimepicker_mode_date}
           catchError={{
-            error: error.maxDate,
+            error: errorState.maxDate,
             message: strings.date_error_message,
           }}
           onPress={() => {
-            setError({...error, maxDate: ''});
+            setErrorState({...errorState, maxDate: ''});
           }}
         />
         <CustomDateTimePicker
@@ -233,11 +242,11 @@ const LoginPage = ({navigation}: any) => {
           onChangeDate={setMinMaxDate}
           mode={strings.datetimepicker_mode_date}
           catchError={{
-            error: error.minMaxDate,
+            error: errorState.minMaxDate,
             message: strings.date_error_message,
           }}
           onPress={() => {
-            setError({...error, minMaxDate: ''});
+            setErrorState({...errorState, minMaxDate: ''});
           }}
         />
         <CustomDateTimePicker
@@ -249,11 +258,11 @@ const LoginPage = ({navigation}: any) => {
           onChangeDate={setCurrDate}
           mode={strings.datetimepicker_mode_date}
           catchError={{
-            error: error.currDate,
+            error: errorState.currDate,
             message: strings.date_error_message,
           }}
           onPress={() => {
-            setError({...error, currDate: ''});
+            setErrorState({...errorState, currDate: ''});
           }}
         />
         <TouchableOpacity
