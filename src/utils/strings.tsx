@@ -20,4 +20,7 @@ export default {
   max_date_error_message: 'Please Select the date below 01 Jan 2024',
   datetimepicker_mode_date: 'Date',
   datetimepicker_mode_time: 'Time',
+  start_date_lbl: 'Start Date',
+  end_date_lbl: 'End Date',
+  start_end_date_error_message: 'End Date must be less than Start Date',
 };

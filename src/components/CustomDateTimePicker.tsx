@@ -42,6 +42,21 @@ const CustomDateTimePicker = (props: any) => {
         }
         return true;
       }
+      case 'startDate':
+        return true;
+      case 'endDate': {
+        const _date = props.validation.startDate.substring(0, 2);
+        const _month = props.validation.startDate.substring(3, 5);
+        const _year = props.validation.startDate.substring(6, 10);
+        console.log(date.getTime() < new Date(_year, _month, _date).getTime());
+        if (date.getTime() < new Date(_year, _month, _date).getTime()) {
+          console.log(1);
+          setErrorMessage(strings.start_end_date_error_message);
+          return false;
+        }
+        console.log(2);
+        return true;
+      }
     }
   };
   const validation = (date: Date) => {

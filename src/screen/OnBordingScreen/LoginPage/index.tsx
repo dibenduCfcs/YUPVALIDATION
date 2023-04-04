@@ -1,7 +1,6 @@
 import {createRef, useCallback, useState} from 'react';
 import {
   Keyboard,
-  StyleSheet,
   Text,
   TouchableOpacity,
   LogBox,
@@ -9,16 +8,18 @@ import {
   View,
 } from 'react-native';
 import * as yup from 'yup';
-import CustomBox from '../components/CustomBox';
-import DropDownBox from '../components/DropDownBox';
-import CustomDateTimePicker from '../components/CustomDateTimePicker';
-import {colors, strings, dimensions, fonts} from '../utils';
-import {emailRegex} from '../utils/validation';
-import {genderData, relationData} from '../constants';
+import DropDownBox from '../../../components/DropDownBox';
+import CustomDateTimePicker from '../../../components/CustomDateTimePicker';
+import {strings, validation} from '../../../utils';
+import {genderData, relationData} from '../../../constants';
+import CustomBox from '../../../components/CustomBox';
+import style from './style';
+
+import moment from 'moment';
+const {emailRegex} = validation;
 LogBox.ignoreAllLogs();
-const {vw, vh} = dimensions;
 const LoginPage = ({navigation}: any) => {
-  // Local States
+  //Local States
   const [userEmail, setEmail] = useState('');
   const [userName, setName] = useState('');
   const [gender, setGender] = useState('');
@@ -30,6 +31,7 @@ const LoginPage = ({navigation}: any) => {
   const [currDate, setCurrDate] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [selectedRange, setSelectedRange] = useState({});
   const [errorState, setErrorState] = useState({
     userName: '',
     userEmail: '',
@@ -314,29 +316,4 @@ const LoginPage = ({navigation}: any) => {
     </ScrollView>
   );
 };
-const style = StyleSheet.create({
-  mainContainer: {
-    backgroundColor: colors.white,
-    alignItems: 'center',
-  },
-  titleLabel: {
-    marginTop: vw(40),
-    color: colors.black,
-    fontSize: vw(20),
-    fontFamily: fonts.IBM_Medium,
-  },
-  loginBtn: {
-    marginVertical: vw(15),
-    width: vw(250),
-    height: vh(50),
-    backgroundColor: colors.blue,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: vw(10),
-  },
-  loginTxt: {
-    fontSize: vw(15),
-    color: colors.white,
-  },
-});
 export default LoginPage;
